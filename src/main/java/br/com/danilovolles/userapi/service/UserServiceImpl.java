@@ -65,12 +65,7 @@ public class UserServiceImpl implements UserService {
             List<UserOutputDTO> userList = new ArrayList<>();
 
             for (User user : users) {
-
-                UserOutputDTO userOutput = new UserOutputDTO();
-
-                userOutput.setId(user.getId());
-                userOutput.setUsername(user.getUsername());
-
+                UserOutputDTO userOutput = convertUserToUserOutputDTO(user);
                 userList.add(userOutput);
             }
 
@@ -90,10 +85,7 @@ public class UserServiceImpl implements UserService {
                     .findById(id)
                     .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
 
-            UserOutputDTO userOutput = new UserOutputDTO();
-
-            userOutput.setId(user.getId());
-            userOutput.setUsername(user.getUsername());
+            UserOutputDTO userOutput = convertUserToUserOutputDTO(user);
 
             return ResponseEntity
                     .status(HttpStatus.OK)
@@ -152,5 +144,12 @@ public class UserServiceImpl implements UserService {
             log.error("Failed to delete user: " + e.getMessage());
             throw new UserServiceLogicException();
         }
+    }
+
+    private UserOutputDTO convertUserToUserOutputDTO(User user) {
+        UserOutputDTO userOutput = new UserOutputDTO();
+        userOutput.setId(user.getId());
+        userOutput.setUsername(user.getUsername());
+        return userOutput;
     }
 }
