@@ -2,6 +2,7 @@ package br.com.danilovolles.userapi.service;
 
 import br.com.danilovolles.userapi.dto.ApiResponseDTO;
 import br.com.danilovolles.userapi.dto.ApiResponseStatus;
+import br.com.danilovolles.userapi.dto.UserOutputDTO;
 import br.com.danilovolles.userapi.dto.UserRegistrationDTO;
 import br.com.danilovolles.userapi.exception.UserAlreadyExistsException;
 import br.com.danilovolles.userapi.exception.UserNotFoundException;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -59,9 +61,22 @@ public class UserServiceImpl implements UserService {
             throws UserServiceLogicException {
         try {
             List<User> users = userRepository.findAllByOrderByRegistrationDateDesc();
+
+            List<UserOutputDTO> userList = new ArrayList<>();
+
+            for (User user : users) {
+
+                UserOutputDTO userOutput = new UserOutputDTO();
+
+                userOutput.setId(user.getId());
+                userOutput.setUsername(user.getUsername());
+
+                userList.add(userOutput);
+            }
+
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(new ApiResponseDTO<>(ApiResponseStatus.SUCCESS.name(), users));
+                    .body(new ApiResponseDTO<>(ApiResponseStatus.SUCCESS.name(), userList));
         } catch (Exception e) {
             log.error("Failed to get all users: " + e.getMessage());
             throw new UserServiceLogicException();
@@ -74,9 +89,15 @@ public class UserServiceImpl implements UserService {
             User user = userRepository
                     .findById(id)
                     .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+
+            UserOutputDTO userOutput = new UserOutputDTO();
+
+            userOutput.setId(user.getId());
+            userOutput.setUsername(user.getUsername());
+
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(new ApiResponseDTO<>(ApiResponseStatus.SUCCESS.name(), user));
+                    .body(new ApiResponseDTO<>(ApiResponseStatus.SUCCESS.name(), userOutput));
         } catch (UserNotFoundException e) {
             throw new UserNotFoundException(e.getMessage());
         } catch (Exception e) {
