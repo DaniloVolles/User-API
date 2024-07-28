@@ -1,7 +1,7 @@
 package br.com.danilovolles.userapi.controller;
 
 import br.com.danilovolles.userapi.dto.ApiResponseDTO;
-import br.com.danilovolles.userapi.dto.UserRegistrationDTO;
+import br.com.danilovolles.userapi.dto.UserInputDTO;
 import br.com.danilovolles.userapi.exception.UserAlreadyExistsException;
 import br.com.danilovolles.userapi.exception.UserNotFoundException;
 import br.com.danilovolles.userapi.exception.UserServiceLogicException;
@@ -20,7 +20,7 @@ public class UserController {
 
     @PostMapping("/new")
     public ResponseEntity<ApiResponseDTO<?>> registerUser(
-            @Valid @RequestBody UserRegistrationDTO userData
+            @Valid @RequestBody UserInputDTO userData
     ) throws UserAlreadyExistsException, UserServiceLogicException {
         return userService.registerUser(userData);
     }
@@ -39,7 +39,7 @@ public class UserController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<ApiResponseDTO<?>> updateUser(
-            @Valid @RequestBody UserRegistrationDTO userData,
+            @Valid @RequestBody UserInputDTO userData,
             @PathVariable Long id
     ) throws UserNotFoundException, UserServiceLogicException {
         return userService.updateUser(userData, id);

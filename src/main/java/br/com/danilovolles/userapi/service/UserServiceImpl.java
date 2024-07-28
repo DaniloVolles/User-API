@@ -1,9 +1,6 @@
 package br.com.danilovolles.userapi.service;
 
-import br.com.danilovolles.userapi.dto.ApiResponseDTO;
-import br.com.danilovolles.userapi.dto.ApiResponseStatus;
-import br.com.danilovolles.userapi.dto.UserOutputDTO;
-import br.com.danilovolles.userapi.dto.UserRegistrationDTO;
+import br.com.danilovolles.userapi.dto.*;
 import br.com.danilovolles.userapi.exception.UserAlreadyExistsException;
 import br.com.danilovolles.userapi.exception.UserNotFoundException;
 import br.com.danilovolles.userapi.exception.UserServiceLogicException;
@@ -27,20 +24,20 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Override
-    public ResponseEntity<ApiResponseDTO<?>> registerUser(UserRegistrationDTO newUserData)
+    public ResponseEntity<ApiResponseDTO<?>> registerUser(UserInputDTO newUserData)
             throws UserAlreadyExistsException, UserServiceLogicException {
         try {
-            if (userRepository.findByEmail(newUserData.getEmail()) != null) {
-                throw new UserAlreadyExistsException("User already exists with email: " + newUserData.getEmail());
+            if (userRepository.findByEmail(newUserData.email()) != null) {
+                throw new UserAlreadyExistsException("User already exists with email: " + newUserData.email());
             }
-            if (userRepository.findByUsername(newUserData.getUsername()) != null) {
-                throw new UserAlreadyExistsException("User already exists with username: " + newUserData.getUsername());
+            if (userRepository.findByUsername(newUserData.username()) != null) {
+                throw new UserAlreadyExistsException("User already exists with username: " + newUserData.username());
             }
 
             User newUser = new User(
-                    newUserData.getUsername(),
-                    newUserData.getEmail(),
-                    newUserData.getPhoneNumber(),
+                    newUserData.username(),
+                    newUserData.email(),
+                    newUserData.phoneNumber(),
                     LocalDateTime.now()
             );
 
@@ -99,16 +96,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<ApiResponseDTO<?>> updateUser(UserRegistrationDTO updateUserData, Long id)
+    public ResponseEntity<ApiResponseDTO<?>> updateUser(UserInputDTO updateUserData, Long id)
             throws UserNotFoundException, UserServiceLogicException {
         try {
             User user = userRepository
                     .findById(id)
                     .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
 
-            user.setUsername(updateUserData.getUsername());
-            user.setEmail(updateUserData.getEmail());
-            user.setPhoneNumber(updateUserData.getPhoneNumber());
+            user.setUsername(updateUserData.username());
+            user.setEmail(updateUserData.email());
+            user.setPhoneNumber(updateUserData.phoneNumber());
 
             userRepository.save(user);
 
