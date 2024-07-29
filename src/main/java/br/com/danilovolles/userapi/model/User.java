@@ -29,6 +29,10 @@ public class User {
     private String username;
 
     @NotBlank
+    @Size(min = 8)
+    private String password;
+
+    @NotBlank
     @Email
     private String email;
 
